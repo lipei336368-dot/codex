@@ -102,7 +102,7 @@ Run:
 ```powershell
 git status --short --branch
 git remote -v
-rg -n "codex/releases/tag|codex.git|yiyan-daily-question-studio" .
+rg -n "old-repo/releases/tag|old-repo.git|yiyan-daily-question-studio" .
 ```
 
 Expected:
@@ -156,7 +156,7 @@ https://github.com/lipei336368-dot/yiyan-daily-question-studio/releases/tag/v0.1
 Run:
 
 ```powershell
-rg -n "codex/releases/tag|codex.git" .
+rg -n "old-repo/releases/tag|old-repo.git" .
 ```
 
 Expected:
@@ -1403,7 +1403,7 @@ Run:
 ```powershell
 git log --oneline --decorate -n 8
 git status --short
-rg -n "codex/releases/tag|codex.git" E:\codex\daily-question-generator-commercial
+rg -n "old-repo/releases/tag|old-repo.git" E:\codex\daily-question-generator-commercial
 ```
 
 Expected:
