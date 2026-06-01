@@ -27,6 +27,11 @@ import { BankEditPanel } from "./components/BankEditPanel";
 import { BankQuestionListPane } from "./components/BankQuestionListPane";
 import { BankToolbar } from "./components/BankToolbar";
 import { buildQuestionUpdatePayload, validateQuestionDraft, type QuestionDraft } from "../question-draft/questionDraft";
+import {
+  availableQuestionIds as getAvailableQuestionIds,
+  getSelectedAvailableQuestions,
+  reconcileSelectedIds
+} from "./bankSelection";
 
 type BankPageProps = {
   subjectId: SubjectId;
@@ -122,7 +127,7 @@ export function BankPage({ subjectId }: BankPageProps) {
   const totalQuestionCount = questionPages?.pages[0]?.total ?? 0;
 
   const availableQuestionIds = useMemo(
-    () => questions.filter((question) => !question.drawn).map((question) => question.id),
+    () => getAvailableQuestionIds(questions),
     [questions]
   );
   const visibleQuestions = useMemo(
@@ -217,13 +222,11 @@ export function BankPage({ subjectId }: BankPageProps) {
   });
 
   useEffect(() => {
-    const visibleIds = new Set(questions.map((question) => question.id));
     setSelectedIds((current) => {
-      const availableIds = new Set(availableQuestionIds);
-      const next = new Set([...current].filter((id) => visibleIds.has(id) && availableIds.has(id)));
+      const next = reconcileSelectedIds(current, questions);
       return next.size === current.size ? current : next;
     });
-  }, [availableQuestionIds, questions]);
+  }, [questions]);
 
   function toggleQuestion(questionId: string) {
     const question = questions.find((item) => item.id === questionId);
@@ -246,7 +249,7 @@ export function BankPage({ subjectId }: BankPageProps) {
   }
 
   function openSelectedPreview() {
-    const selectedQuestions = questions.filter((question) => selectedIds.has(question.id) && !question.drawn);
+    const selectedQuestions = getSelectedAvailableQuestions(questions, selectedIds);
     openPreview(selectedQuestions.length > 0 ? selectedQuestions : undefined);
   }
 
