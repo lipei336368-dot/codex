@@ -12,7 +12,8 @@ import type {
   QuestionDto,
   QuestionOptionInput,
   TaskProgressDto,
-  QuestionTypeDto
+  QuestionTypeDto,
+  UpdateQuestionInput
 } from "../../shared/api/contracts";
 import { Button } from "../../shared/components/Button";
 import { ConfirmDialog } from "../../shared/components/ConfirmDialog";
@@ -25,6 +26,7 @@ import { TaskProgressDialog } from "../tasks/TaskProgressDialog";
 import { BankEditPanel } from "./components/BankEditPanel";
 import { BankQuestionListPane } from "./components/BankQuestionListPane";
 import { BankToolbar } from "./components/BankToolbar";
+import { buildQuestionUpdatePayload, validateQuestionDraft, type QuestionDraft } from "../question-draft/questionDraft";
 
 type BankPageProps = {
   subjectId: SubjectId;
@@ -136,17 +138,7 @@ export function BankPage({ subjectId }: BankPageProps) {
   };
 
   const updateQuestionMutation = useMutation({
-    mutationFn: (question: {
-      id: string;
-      chapterId: string;
-      stem: string;
-      answer: string | null;
-      analysis: string | null;
-      stemImagePath: string | null;
-      answerImagePath: string | null;
-      analysisImagePath: string | null;
-      options: QuestionOptionInput[];
-    }) => apiClient.updateQuestion(question),
+    mutationFn: (question: UpdateQuestionInput) => apiClient.updateQuestion(question),
     onSuccess: async (_data, variables) => {
       setEditingQuestion(null);
       await refreshBankData();
@@ -286,33 +278,28 @@ export function BankPage({ subjectId }: BankPageProps) {
     if (!editingQuestion) {
       return;
     }
-    const isChoice = editingQuestion.questionType === "single_choice" || editingQuestion.questionType === "multiple_choice";
-    const correctLabels = editingOptions
-      .filter((option) => option.isCorrect)
-      .map((option) => option.label);
-
-    if (editingQuestion.questionType === "single_choice" && correctLabels.length !== 1) {
-      setEditingError("单选题必须选择一个正确答案");
-      return;
-    }
-    if (editingQuestion.questionType === "multiple_choice" && correctLabels.length < 2) {
-      setEditingError("多选题至少选择两个正确答案");
+    const draft: QuestionDraft = {
+      subjectId: editingQuestion.subjectId,
+      chapterId: editingChapterId || editingQuestion.chapterId,
+      questionType: editingQuestion.questionType,
+      stem: editingStem,
+      answer: editingAnswer,
+      analysis: editingAnalysis,
+      stemImagePath: editingStemImagePath,
+      answerImagePath: editingAnswerImagePath,
+      analysisImagePath: editingAnalysisImagePath,
+      sourceSchool: editingQuestion.sourceSchool,
+      sourceYear: editingQuestion.sourceYear,
+      options: editingOptions
+    };
+    const validation = validateQuestionDraft(draft);
+    if (!validation.ok) {
+      setEditingError(validation.message);
       return;
     }
 
     setEditingError("");
-
-    updateQuestionMutation.mutate({
-      id: editingQuestion.id,
-      chapterId: editingChapterId || editingQuestion.chapterId,
-      stem: editingStem,
-      answer: isChoice ? correctLabels.join("") || null : editingAnswer || null,
-      analysis: isChoice ? editingAnalysis || null : null,
-      stemImagePath: editingStemImagePath,
-      answerImagePath: editingAnswerImagePath,
-      analysisImagePath: editingAnalysisImagePath,
-      options: isChoice ? editingOptions : []
-    });
+    updateQuestionMutation.mutate(buildQuestionUpdatePayload(editingQuestion.id, draft));
   }
 
   async function attachEditingImage(

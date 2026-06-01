@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { ClipboardEvent } from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import "../../shared/design-system/bank.css";
 import type { SubjectId } from "../../app/store";
@@ -13,6 +13,7 @@ import { SegmentedControl } from "../../shared/components/SegmentedControl";
 import { TextArea } from "../../shared/components/TextArea";
 import { ChoiceOptionCard } from "./components/ChoiceOptionCard";
 import { QuestionAssetPicker } from "./components/QuestionAssetPicker";
+import { buildQuestionPayload, validateQuestionDraft, type QuestionDraft } from "../question-draft/questionDraft";
 
 type EntryPageProps = {
   subjectId: SubjectId;
@@ -79,44 +80,9 @@ export function EntryPage({ subjectId }: EntryPageProps) {
   }, [chapterId, chapters]);
 
   const isChoiceType = questionType === "single_choice" || questionType === "multiple_choice";
-  const selectedAnswer = useMemo(() => {
-    if (questionType === "single_choice") {
-      return singleCorrectLabel;
-    }
-    if (questionType === "multiple_choice") {
-      return [...multipleCorrectLabels].sort().join(",");
-    }
-    return answer.trim();
-  }, [answer, multipleCorrectLabels, questionType, singleCorrectLabel]);
 
   const createQuestionMutation = useMutation({
-    mutationFn: () =>
-      apiClient.createQuestion({
-        subjectId,
-        chapterId,
-        questionType,
-        stem: stem.trim(),
-        answer: selectedAnswer || null,
-        analysis: isChoiceType ? analysis.trim() || null : null,
-        stemImagePath: stemImage.path,
-        answerImagePath: answerImage.path,
-        analysisImagePath: analysisImage.path,
-        options: isChoiceType
-          ? options
-              .filter((option) => option.text.trim() || option.imagePath)
-              .map((option) => ({
-                label: option.label,
-                text: option.text.trim() || null,
-                imagePath: option.imagePath,
-                isCorrect:
-                  questionType === "single_choice"
-                    ? option.label === singleCorrectLabel
-                    : multipleCorrectLabels.has(option.label)
-              }))
-          : [],
-        sourceSchool: null,
-        sourceYear: null
-      }),
+    mutationFn: (question: ReturnType<typeof buildQuestionPayload>) => apiClient.createQuestion(question),
     onSuccess: async () => {
       setSaveMessage(`已保存：${typeLabels[questionType]}`);
       resetDraft();
@@ -188,51 +154,40 @@ export function EntryPage({ subjectId }: EntryPageProps) {
   }
 
   function saveQuestion() {
-    const validationError = validateQuestion();
-    if (validationError) {
+    const draft = buildDraft();
+    const validation = validateQuestionDraft(draft);
+    if (!validation.ok) {
       setSaveMessage("");
-      setErrorMessage(validationError);
+      setErrorMessage(validation.message);
       return;
     }
     setErrorMessage("");
-    createQuestionMutation.mutate();
+    createQuestionMutation.mutate(buildQuestionPayload(draft));
   }
 
-  function validateQuestion() {
-    if (!chapterId) {
-      return "章节不能为空";
-    }
-    if (!stem.trim() && !stemImage.path) {
-      return "题干不能为空";
-    }
-
-    if (isChoiceType) {
-      const selectedLabels = questionType === "single_choice" ? (singleCorrectLabel ? [singleCorrectLabel] : []) : [...multipleCorrectLabels];
-      if (questionType === "single_choice" && selectedLabels.length !== 1) {
-        return "单选题必须选择一个正确答案";
-      }
-      if (questionType === "multiple_choice" && selectedLabels.length < 2) {
-        return "多选题至少选择两个正确答案";
-      }
-      if (
-        selectedLabels.some((label) => {
-          const option = options.find((item) => item.label === label);
-          return !option?.text.trim() && !option?.imagePath;
-        })
-      ) {
-        return "正确答案对应的选项不能为空";
-      }
-      if (options.filter((option) => option.text.trim() || option.imagePath).length < 2) {
-        return "至少填写两个选项";
-      }
-      if (!analysis.trim() && !analysisImage.path) {
-        return "解析不能为空";
-      }
-    } else if (!answer.trim() && !answerImage.path) {
-      return "答案不能为空";
-    }
-
-    return "";
+  function buildDraft(): QuestionDraft {
+    return {
+      subjectId,
+      chapterId,
+      questionType,
+      stem,
+      answer,
+      analysis,
+      stemImagePath: stemImage.path,
+      answerImagePath: answerImage.path,
+      analysisImagePath: analysisImage.path,
+      sourceSchool: null,
+      sourceYear: null,
+      options: options.map((option) => ({
+        label: option.label,
+        text: option.text,
+        imagePath: option.imagePath,
+        isCorrect:
+          questionType === "single_choice"
+            ? option.label === singleCorrectLabel
+            : multipleCorrectLabels.has(option.label)
+      }))
+    };
   }
 
   async function attachImage(file: File, setImage: (image: ImageDraft) => void) {
