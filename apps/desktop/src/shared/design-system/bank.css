@@ -1,0 +1,1634 @@
+.question-summary-rail {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(110px, 1fr));
+  gap: 10px;
+  margin-bottom: var(--space-4);
+}
+
+.question-row {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px 120px 14px 46px;
+  background: rgba(255, 255, 255, 0.68);
+}
+
+.virtual-question-list {
+  position: relative;
+  min-height: 0;
+  height: 100%;
+  overflow: auto;
+}
+
+.virtual-question-list-inner {
+  position: relative;
+  width: 100%;
+}
+
+.virtual-question-row {
+  position: absolute;
+  left: 0;
+  right: 0;
+  min-height: 52px;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  display: grid;
+  grid-template-columns: 28px auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  background: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition:
+    border-color var(--motion-base) var(--motion-ease),
+    background var(--motion-base) var(--motion-ease);
+}
+
+.virtual-question-row:hover {
+  border-color: rgba(48, 143, 126, 0.35);
+  background: rgba(255, 255, 255, 0.86);
+}
+
+.virtual-question-row-selected {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.virtual-question-row-drawn {
+  opacity: 0.68;
+  background: rgba(245, 247, 247, 0.78);
+}
+
+.virtual-question-row-loading {
+  display: flex;
+  justify-content: center;
+  color: var(--color-muted);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: default;
+}
+
+.question-row-selector {
+  display: grid;
+  place-items: center;
+  min-width: 24px;
+}
+
+.question-row-selector input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.virtual-question-stem {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--color-text);
+  font-size: 14px;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.question-row-status {
+  color: var(--color-success);
+  font-size: 12px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.question-row-status-drawn {
+  color: var(--color-text-muted);
+}
+
+.question-row-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  min-width: max-content;
+}
+
+.question-row-action {
+  min-height: 32px;
+  border: 0;
+  border-radius: 999px;
+  padding: 7px 12px;
+  color: var(--accent-deep);
+  background: var(--accent-soft);
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.question-row-action-danger {
+  color: #a53434;
+  background: rgba(190, 55, 55, 0.12);
+}
+
+.question-row-reset {
+  border: 0;
+  border-radius: 999px;
+  padding: 7px 10px;
+  color: var(--accent-deep);
+  background: var(--accent-soft);
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.bank-page {
+  display: grid;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.bank-workbench {
+  display: grid;
+  grid-template-columns: minmax(190px, 240px) minmax(0, 1fr);
+  gap: 18px;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.bank-edit-page {
+  position: fixed;
+  inset: var(--app-titlebar-height, 38px) 0 0;
+  z-index: 30;
+  overflow: auto;
+  padding: 34px 0 46px;
+  background:
+    radial-gradient(circle at 8% 12%, rgba(43, 140, 120, 0.14), transparent 28%),
+    radial-gradient(circle at 92% 18%, rgba(116, 103, 183, 0.1), transparent 24%),
+    linear-gradient(135deg, #f8fbfa 0%, #edf5f2 100%);
+}
+
+.bank-edit-shell {
+  width: min(1520px, calc(100vw - 128px));
+  margin: 0 auto;
+  display: grid;
+  gap: 28px;
+}
+
+.bank-edit-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+  padding: 0 2px;
+}
+
+.bank-edit-header h2 {
+  position: relative;
+  margin: 0;
+  padding-left: 16px;
+  color: var(--color-text);
+  font-size: 30px;
+  line-height: 1.15;
+}
+
+.bank-edit-header h2::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 5px;
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+.bank-edit-title {
+  min-width: 0;
+}
+
+.bank-edit-kicker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.bank-edit-chapter {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.bank-edit-overview {
+  max-width: 78ch;
+  color: var(--color-text);
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.bank-edit-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+  white-space: nowrap;
+}
+
+.bank-edit-form {
+  display: grid;
+  gap: 16px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.76);
+}
+
+.bank-edit-main-card {
+  border: 1px solid rgba(209, 224, 221, 0.72);
+  border-radius: 18px;
+  display: grid;
+  gap: 22px;
+  overflow: visible;
+  padding: 28px 34px 34px;
+  background: rgba(255, 255, 255, 0.84);
+  box-shadow: 0 20px 52px rgba(42, 62, 57, 0.12);
+}
+
+.bank-edit-meta-row {
+  max-width: 660px;
+  display: block;
+  color: var(--color-text);
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.bank-edit-meta-row select {
+  min-width: 0;
+}
+
+.bank-edit-error {
+  margin: 0;
+}
+
+.bank-edit-meta-row strong {
+  min-height: 46px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  color: #1f2e2a;
+  background: rgba(255, 255, 255, 0.74);
+  font-weight: 750;
+}
+
+.bank-edit-form-grid {
+  display: grid;
+  gap: 22px;
+  overflow: visible;
+}
+
+.bank-edit-field {
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: 12px;
+}
+
+.bank-edit-field-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #1c2d28;
+  font-size: 16px;
+  font-weight: 950;
+}
+
+.bank-edit-field .control-field > span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.bank-edit-primary-field textarea {
+  min-height: 54px;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.bank-edit-secondary-field textarea {
+  font-size: 15px;
+  line-height: 1.62;
+}
+
+.bank-edit-secondary-field .option-image-editor {
+  gap: 12px;
+  margin-bottom: 0;
+}
+
+.bank-edit-secondary-field .option-image-row {
+  grid-template-columns: 28px 52px minmax(0, 1fr) auto auto auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 58px;
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+
+.bank-edit-secondary-field .option-image-label {
+  display: block;
+}
+
+.option-row-grip {
+  color: var(--color-text-muted);
+}
+
+.bank-edit-secondary-field .option-letter {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  color: var(--color-text);
+  background: rgba(255, 255, 255, 0.76);
+  font-size: 16px;
+  font-weight: 850;
+}
+
+.bank-edit-secondary-field .option-image-label textarea {
+  field-sizing: content;
+  min-height: 44px;
+  border-radius: 9px;
+  line-height: 1.55;
+  overflow: hidden;
+}
+
+.option-auto-textarea {
+  field-sizing: content;
+}
+
+.option-correct-check {
+  display: grid;
+  place-items: center;
+}
+
+.option-correct-check input {
+  width: 23px;
+  height: 23px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.bank-edit-secondary-field .image-attachment {
+  min-width: 112px;
+  justify-items: center;
+}
+
+.bank-edit-secondary-field .image-choose {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.option-row-icon-button {
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  color: var(--color-text-muted);
+  background: transparent;
+  cursor: pointer;
+}
+
+.option-row-icon-button:hover {
+  color: #a53434;
+  background: rgba(190, 55, 55, 0.1);
+}
+
+.bank-edit-add-option {
+  width: fit-content;
+  min-height: 42px;
+  border: 1px solid rgba(43, 140, 120, 0.44);
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  color: var(--accent-deep);
+  background: rgba(255, 255, 255, 0.58);
+  cursor: pointer;
+  font-weight: 900;
+}
+
+@media (max-width: 1180px) {
+  .bank-edit-page {
+    padding: 24px 0 34px;
+  }
+
+  .bank-edit-shell {
+    width: min(100% - 36px, 980px);
+  }
+
+  .bank-edit-secondary-field .option-image-row {
+    grid-template-columns: 28px 44px minmax(0, 1fr);
+  }
+
+  .bank-edit-secondary-field .image-attachment,
+  .option-row-icon-button,
+  .option-correct-check {
+    grid-column: 3;
+    justify-self: start;
+  }
+}
+
+.bank-list-pane {
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto auto auto auto auto minmax(0, 1fr);
+  overflow: hidden;
+  padding: var(--space-4);
+}
+
+.bank-duplicate-panel {
+  min-width: 0;
+  min-height: 0;
+  padding: 18px;
+}
+
+.question-row-muted {
+  opacity: 0.62;
+  padding-left: 14px;
+}
+
+.question-row-empty {
+  padding-right: 14px;
+}
+
+.duplicate-question-row {
+  border-top: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  padding-top: 10px;
+  color: var(--accent-deep);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.duplicate-question-row span {
+  overflow-wrap: anywhere;
+}
+
+.duplicate-question-row button {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 7px 10px;
+  color: var(--accent-deep);
+  background: rgba(255, 255, 255, 0.72);
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.bank-edit-page {
+  padding: 36px 0 42px;
+  background: #f5f6f4;
+}
+
+.bank-edit-shell {
+  width: min(1620px, calc(100vw - 112px));
+  gap: 24px;
+}
+
+.bank-edit-header {
+  align-items: center;
+}
+
+.bank-edit-header h2 {
+  padding-left: 24px;
+  font-size: 36px;
+  letter-spacing: 0;
+}
+
+.bank-edit-header h2::before {
+  top: 2px;
+  bottom: 2px;
+  width: 6px;
+  background: #2d8a7a;
+}
+
+.bank-edit-actions {
+  gap: 22px;
+}
+
+.bank-edit-actions .button {
+  min-height: 52px;
+  border-radius: 9px;
+  padding: 0 24px;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.bank-edit-actions .button-ghost {
+  border: 1px solid rgba(43, 129, 116, 0.72);
+  color: #247368;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.bank-edit-actions .button-primary {
+  background: #2b8d7d;
+  box-shadow: 0 12px 24px rgba(43, 141, 125, 0.18);
+}
+
+.bank-edit-main-card {
+  gap: 22px;
+  border-color: rgba(198, 207, 203, 0.86);
+  border-radius: 12px;
+  padding: 30px 50px 34px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 16px 36px rgba(32, 41, 42, 0.08);
+}
+
+.bank-edit-meta-row,
+.bank-edit-line,
+.bank-edit-options-section {
+  display: grid;
+  grid-template-columns: 126px minmax(0, 1fr) 48px;
+  align-items: start;
+  gap: 14px;
+}
+
+.bank-edit-meta-row {
+  grid-template-columns: 126px minmax(360px, 520px) auto minmax(0, 1fr);
+  align-items: center;
+  max-width: none;
+}
+
+.bank-edit-row-label {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  color: #1f2a31;
+  font-size: 19px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.bank-edit-chapter-select {
+  min-width: 0;
+}
+
+.bank-edit-chapter-select .control-field > span,
+.bank-edit-line .control-field > span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.bank-edit-chapter-select .control-field {
+  margin: 0;
+}
+
+.bank-edit-chapter-select select {
+  min-height: 56px;
+  border-radius: 8px;
+  padding: 0 34px;
+  color: #17202a;
+  background: rgba(255, 255, 255, 0.92);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.bank-edit-meta-row .question-type-badge {
+  align-self: center;
+  border: 1px solid rgba(43, 129, 116, 0.18);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: #2d756b;
+  background: #eef5f2;
+  font-size: 15px;
+}
+
+.bank-edit-form-grid {
+  gap: 22px;
+}
+
+.bank-edit-line .control-field {
+  min-width: 0;
+  margin: 0;
+}
+
+.bank-edit-primary-field textarea,
+.bank-edit-secondary-field textarea,
+.bank-edit-line textarea,
+.option-text-control textarea {
+  min-height: 44px;
+  border: 1px solid rgba(198, 207, 203, 0.86);
+  border-radius: 8px;
+  padding: 9px 14px;
+  color: #17202a;
+  background: rgba(255, 255, 255, 0.9);
+  font-size: 18px;
+  line-height: 1.45;
+  resize: none;
+  overflow-wrap: anywhere;
+}
+
+.bank-edit-primary-field textarea {
+  min-height: 44px;
+  font-size: 18px;
+  line-height: 1.45;
+}
+
+.bank-edit-secondary-field textarea {
+  font-size: 17px;
+  line-height: 1.45;
+}
+
+.bank-edit-line .image-attachment,
+.bank-edit-secondary-field .image-attachment,
+.option-editor .image-attachment {
+  min-width: 0;
+  grid-column: auto;
+  margin: 0;
+  justify-items: center;
+}
+
+.bank-edit-line .image-choose,
+.bank-edit-secondary-field .image-choose,
+.option-editor .image-choose {
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  border: 1px solid rgba(198, 207, 203, 0.94);
+  border-radius: 8px;
+  justify-content: center;
+  padding: 0;
+  color: #1f2a31;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.bank-edit-line .image-choose svg,
+.bank-edit-secondary-field .image-choose svg,
+.option-editor .image-choose svg {
+  width: 19px;
+  height: 19px;
+}
+
+.bank-edit-line .image-preview,
+.bank-edit-secondary-field .image-preview,
+.option-editor .image-preview {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+}
+
+.bank-edit-line .image-preview img,
+.bank-edit-secondary-field .image-preview img,
+.option-editor .image-preview img {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  object-fit: contain;
+  background: #f8faf8;
+}
+
+.bank-edit-line .option-remove,
+.bank-edit-secondary-field .option-remove,
+.option-editor .option-remove {
+  min-height: 28px;
+  padding: 0 8px;
+  color: #9a3d3d;
+  background: rgba(154, 61, 61, 0.08);
+  font-size: 12px;
+}
+
+.bank-edit-options-section {
+  grid-template-columns: 126px minmax(0, 1fr);
+}
+
+.bank-edit-options-stack {
+  min-width: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.bank-edit-secondary-field .option-image-editor,
+.option-grid-editing {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.bank-edit-secondary-field .option-image-row,
+.option-editor {
+  min-height: 58px;
+  display: grid;
+  grid-template-columns: 28px 52px minmax(0, 1fr) 44px 44px 44px;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid rgba(198, 207, 203, 0.86);
+  border-radius: 8px;
+  padding: 7px 10px;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.option-editor-correct {
+  border-color: rgba(43, 129, 116, 0.35);
+  background: rgba(239, 247, 244, 0.74);
+}
+
+.bank-edit-secondary-field .option-letter,
+.option-editor .option-letter {
+  width: 44px;
+  height: 44px;
+  border-color: rgba(198, 207, 203, 0.86);
+  border-radius: 8px;
+  color: #151c23;
+  background: rgba(255, 255, 255, 0.88);
+  font-size: 20px;
+  font-weight: 850;
+}
+
+.bank-edit-secondary-field .option-image-label,
+.option-text-control {
+  min-width: 0;
+  display: block;
+}
+
+.bank-edit-secondary-field .option-image-label label {
+  display: block;
+}
+
+.bank-edit-secondary-field .option-image-label span,
+.option-text-control span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.bank-edit-secondary-field .option-image-label textarea,
+.option-text-control textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 9px 12px;
+}
+
+.option-correct-check,
+.option-correct-control {
+  display: grid;
+  place-items: center;
+}
+
+.option-correct-check input,
+.option-correct-control input {
+  width: 26px;
+  height: 26px;
+  accent-color: #2b8d7d;
+  cursor: pointer;
+}
+
+.option-row-icon-button {
+  width: 44px;
+  height: 44px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: #8f3d3d;
+  background: transparent;
+}
+
+.option-row-icon-button:hover {
+  color: #9a3434;
+  background: rgba(154, 52, 52, 0.08);
+}
+
+.bank-edit-add-option {
+  width: 44px;
+  min-height: 44px;
+  height: 44px;
+  border: 1px solid rgba(198, 207, 203, 0.9);
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  color: #17202a;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: none;
+}
+
+.bank-edit-add-option svg {
+  width: 20px;
+  height: 20px;
+}
+
+@media (max-width: 1180px) {
+  .bank-edit-meta-row,
+  .bank-edit-line,
+  .bank-edit-options-section {
+    grid-template-columns: 92px minmax(0, 1fr) 44px;
+  }
+
+  .bank-edit-options-section {
+    grid-template-columns: 92px minmax(0, 1fr);
+  }
+
+  .bank-edit-secondary-field .option-image-row,
+  .option-editor {
+    grid-template-columns: 24px 44px minmax(0, 1fr) 40px 40px 40px;
+  }
+}
+
+.entry-workbench {
+  padding: 36px 0 42px;
+  background: #f5f6f4;
+}
+
+.entry-edit-shell {
+  width: min(1620px, calc(100vw - 112px));
+}
+
+.entry-edit-card {
+  gap: 22px;
+}
+
+.entry-edit-meta-row {
+  grid-template-columns: 126px minmax(360px, 520px) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+}
+
+.entry-type-control {
+  justify-self: end;
+}
+
+.entry-type-control .segmented-control {
+  min-height: 0;
+  gap: 4px;
+  border: 1px solid rgba(198, 207, 203, 0.74);
+  border-radius: 9px;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.62);
+  box-shadow: none;
+}
+
+.entry-type-control .segment {
+  min-height: 34px;
+  border-radius: 7px;
+  padding: 0 12px;
+  color: #66736f;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.entry-type-control .segment-active {
+  color: #2d756b;
+  background: #eef5f2;
+  box-shadow: none;
+}
+
+.entry-edit-card .entry-card {
+  margin-bottom: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.app-workbench-grid:has(.bank-edit-page),
+.app-workbench-grid:has(.entry-edit-workbench) {
+  grid-template-columns: minmax(0, 1fr);
+  background: #f5f6f4;
+}
+
+.app-workbench-grid:has(.bank-edit-page) .side-nav,
+.app-workbench-grid:has(.bank-edit-page) .top-status-bar,
+.app-workbench-grid:has(.entry-edit-workbench) .side-nav,
+.app-workbench-grid:has(.entry-edit-workbench) .top-status-bar {
+  display: none;
+}
+
+.app-workbench-grid:has(.bank-edit-page) .workspace,
+.app-workbench-grid:has(.entry-edit-workbench) .workspace {
+  min-width: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.app-workbench-grid:has(.bank-edit-page) .workspace-content,
+.app-workbench-grid:has(.entry-edit-workbench) .workspace-content {
+  min-width: 0;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-gutter: auto;
+}
+
+.bank-edit-page {
+  position: relative;
+  inset: auto;
+  z-index: auto;
+  min-height: 100%;
+  padding: 34px 0 40px;
+  overflow: visible;
+  background: #f5f6f4;
+}
+
+.entry-edit-workbench {
+  min-height: 100%;
+  height: auto;
+  align-content: start;
+  padding: 34px 0 40px;
+  overflow: visible;
+  background: #f5f6f4;
+}
+
+.bank-edit-shell,
+.entry-edit-shell {
+  width: min(1568px, calc(100% - 96px));
+  max-width: 1568px;
+}
+
+.bank-edit-main-card {
+  overflow: visible;
+}
+
+.bank-edit-line .control-field,
+.bank-edit-line .image-attachment,
+.bank-edit-options-section > .bank-edit-row-label {
+  align-self: start;
+}
+
+.bank-edit-line .control-field textarea,
+.bank-edit-secondary-field .option-image-label textarea,
+.option-text-control textarea {
+  overflow-y: hidden;
+}
+
+.entry-edit-card .selection-toolbar {
+  margin: 0;
+}
+
+.bank-edit-page,
+.entry-edit-workbench,
+.app-workbench-grid:has(.bank-edit-page),
+.app-workbench-grid:has(.entry-edit-workbench) {
+  background: #f7f7f5;
+}
+
+.bank-edit-shell,
+.entry-edit-shell {
+  width: min(1500px, calc(100% - 88px));
+  gap: 18px;
+}
+
+.bank-edit-header h2 {
+  padding-left: 18px;
+  color: #1f2930;
+  font-size: 30px;
+  font-weight: 900;
+}
+
+.bank-edit-header h2::before {
+  width: 5px;
+  background: #4d8c80;
+}
+
+.bank-edit-actions {
+  gap: 12px;
+}
+
+.bank-edit-actions .button {
+  min-height: 44px;
+  border-radius: 8px;
+  padding: 0 20px;
+  font-size: 15px;
+  font-weight: 850;
+}
+
+.bank-edit-actions .button-ghost {
+  border-color: #cbd8d4;
+  color: #326e65;
+  background: #ffffff;
+}
+
+.bank-edit-actions .button-primary {
+  background: #3f8779;
+  box-shadow: 0 8px 18px rgba(63, 135, 121, 0.12);
+}
+
+.bank-edit-main-card {
+  gap: 18px;
+  border-color: #d7dedb;
+  padding: 24px 40px 28px;
+  background: #ffffff;
+  box-shadow: 0 12px 28px rgba(31, 41, 48, 0.05);
+}
+
+.bank-edit-meta-row,
+.bank-edit-line,
+.bank-edit-options-section {
+  grid-template-columns: 112px minmax(0, 1fr) 42px;
+  gap: 12px;
+}
+
+.bank-edit-options-section {
+  grid-template-columns: 112px minmax(0, 1fr);
+}
+
+.bank-edit-meta-row,
+.entry-edit-meta-row {
+  grid-template-columns: 112px minmax(320px, 480px) auto minmax(0, 1fr);
+}
+
+.bank-edit-row-label {
+  min-height: 42px;
+  color: #2b3338;
+  font-size: 16px;
+  font-weight: 850;
+}
+
+.bank-edit-chapter-select select {
+  min-height: 48px;
+  padding: 0 28px;
+  border-color: #d5ddda;
+  color: #202a31;
+  font-size: 16px;
+}
+
+.bank-edit-meta-row .question-type-badge {
+  border-color: #d5e2de;
+  color: #46766f;
+  background: #f1f5f3;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.bank-edit-form-grid,
+.bank-edit-options-stack,
+.bank-edit-secondary-field .option-image-editor,
+.option-grid-editing {
+  gap: 8px;
+}
+
+.bank-edit-primary-field textarea,
+.bank-edit-secondary-field textarea,
+.bank-edit-line textarea,
+.option-text-control textarea {
+  min-height: 42px;
+  border-color: #d5ddda;
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: #202a31;
+  background: #ffffff;
+  font-size: 16px;
+  line-height: 1.42;
+}
+
+.bank-edit-primary-field textarea {
+  font-size: 16px;
+  line-height: 1.42;
+}
+
+.bank-edit-secondary-field textarea {
+  font-size: 15px;
+}
+
+.bank-edit-main-card textarea[data-fit="compressed"],
+.option-auto-textarea[data-fit="compressed"],
+.option-text-control textarea[data-fit="compressed"] {
+  color: #263239;
+}
+
+.bank-edit-main-card textarea[data-overflowing="true"],
+.option-auto-textarea[data-overflowing="true"],
+.option-text-control textarea[data-overflowing="true"] {
+  scrollbar-width: thin;
+  scrollbar-color: #b8c7c2 transparent;
+}
+
+.bank-edit-line .image-choose,
+.bank-edit-secondary-field .image-choose,
+.option-editor .image-choose,
+.option-row-icon-button,
+.bank-edit-add-option {
+  width: 42px;
+  height: 42px;
+  min-height: 42px;
+  border-color: #d5ddda;
+  border-radius: 8px;
+  color: #2b3338;
+  background: #ffffff;
+}
+
+.bank-edit-line .image-choose svg,
+.bank-edit-secondary-field .image-choose svg,
+.option-editor .image-choose svg {
+  width: 18px;
+  height: 18px;
+}
+
+.bank-edit-secondary-field .option-image-row,
+.option-editor {
+  min-height: 54px;
+  grid-template-columns: 24px 48px minmax(0, 1fr) 42px 42px 42px;
+  gap: 10px;
+  border-color: #d9e0dd;
+  padding: 6px 9px;
+  background: #ffffff;
+}
+
+.option-editor-correct {
+  border-color: #bfd6d0;
+  background: #f3f7f5;
+}
+
+.bank-edit-secondary-field .option-letter,
+.option-editor .option-letter {
+  width: 40px;
+  height: 40px;
+  border-color: #d8dfdc;
+  color: #20272d;
+  font-size: 18px;
+}
+
+.option-correct-check input,
+.option-correct-control input {
+  width: 22px;
+  height: 22px;
+  accent-color: #4d8c80;
+}
+
+.option-row-delete {
+  color: #9a5a5a;
+}
+
+.option-row-icon-button:hover {
+  color: #8e4747;
+  background: #f7eeee;
+}
+
+.entry-type-control .segmented-control {
+  border-color: #d5ddda;
+  background: #ffffff;
+}
+
+.entry-type-control .segment {
+  min-height: 32px;
+  color: #6f7976;
+  font-size: 13px;
+}
+
+.entry-type-control .segment-active {
+  color: #3f756d;
+  background: #f1f5f3;
+}
+
+.bank-edit-title {
+  min-height: 44px;
+}
+
+/* Keep the bank workspace stable when the desktop window is not maximized. */
+.bank-page {
+  min-width: 0;
+}
+
+.bank-workbench {
+  grid-template-columns: minmax(168px, 232px) minmax(0, 1fr);
+  gap: clamp(10px, 1.3vw, 18px);
+}
+
+.filter-rail {
+  min-width: 0;
+  padding: clamp(12px, 1.2vw, 16px);
+}
+
+.filter-section {
+  gap: 6px;
+  margin-bottom: 0;
+}
+
+.filter-item {
+  min-width: 0;
+  padding: 9px 10px;
+  line-height: 1.35;
+}
+
+.filter-item span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.bank-list-pane {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: clamp(12px, 1.2vw, 16px);
+}
+
+.question-summary-rail {
+  grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.summary-card {
+  min-width: 0;
+  padding: 9px 10px;
+}
+
+.virtual-question-row {
+  min-width: 0;
+  grid-template-columns: 26px auto minmax(0, 1fr) auto auto;
+  gap: 9px;
+}
+
+.virtual-question-list,
+.inspector-empty {
+  flex: 1 1 auto;
+  min-height: 160px;
+}
+
+.question-row-actions {
+  min-width: 0;
+}
+
+@media (max-width: 1180px) {
+  .app-workbench-grid {
+    grid-template-columns: 72px minmax(0, 1fr);
+  }
+
+  .side-nav {
+    margin: 14px 0 14px 12px;
+    padding: 12px 8px;
+  }
+
+  .workspace {
+    padding: 16px;
+  }
+
+  .top-status-bar {
+    border-radius: 18px;
+  }
+
+  .top-status-meta span {
+    padding: 7px 9px;
+  }
+
+  .bank-workbench {
+    grid-template-columns: 156px minmax(0, 1fr);
+  }
+
+  .toolbar {
+    grid-template-columns: auto minmax(180px, 1fr);
+    gap: 10px;
+  }
+
+  .toolbar-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+  }
+
+  .question-summary-rail {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .virtual-question-row {
+    grid-template-columns: 24px auto minmax(0, 1fr) auto;
+    padding: 8px 10px;
+  }
+
+  .question-row-status {
+    display: none;
+  }
+
+  .question-row-action {
+    min-height: 30px;
+    padding: 6px 9px;
+  }
+
+  .bank-edit-page,
+  .entry-edit-workbench {
+    padding: 20px 0 28px;
+  }
+
+  .bank-edit-shell,
+  .entry-edit-shell {
+    width: min(100% - 40px, 1500px);
+    gap: 14px;
+  }
+
+  .bank-edit-main-card {
+    padding: 20px 24px 24px;
+  }
+
+  .bank-edit-header h2 {
+    font-size: 26px;
+  }
+
+  .bank-edit-actions {
+    gap: 8px;
+  }
+
+  .bank-edit-actions .button {
+    min-height: 40px;
+    padding: 0 14px;
+    font-size: 14px;
+  }
+
+  .bank-edit-meta-row,
+  .entry-edit-meta-row {
+    grid-template-columns: 96px minmax(280px, 1fr) auto minmax(0, 1fr);
+  }
+
+  .bank-edit-line,
+  .bank-edit-options-section {
+    grid-template-columns: 96px minmax(0, 1fr) 40px;
+  }
+
+  .bank-edit-options-section {
+    grid-template-columns: 96px minmax(0, 1fr);
+  }
+
+  .bank-edit-secondary-field .option-image-row,
+  .option-editor {
+    grid-template-columns: 22px 42px minmax(0, 1fr) 38px 38px 38px;
+    gap: 8px;
+  }
+
+  .bank-edit-line .image-choose,
+  .bank-edit-secondary-field .image-choose,
+  .option-editor .image-choose,
+  .option-row-icon-button,
+  .bank-edit-add-option {
+    width: 38px;
+    height: 38px;
+    min-height: 38px;
+  }
+}
+
+@media (max-width: 980px) {
+  .workspace {
+    padding: 12px;
+  }
+
+  .top-status-bar h1 {
+    font-size: 24px;
+  }
+
+  .top-status-meta {
+    gap: 6px;
+  }
+
+  .top-status-meta span {
+    display: none;
+  }
+
+  .bank-workbench {
+    grid-template-columns: 140px minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .filter-rail,
+  .bank-list-pane {
+    border-radius: 16px;
+    padding: 10px;
+  }
+
+  .filter-item {
+    padding: 8px;
+    font-size: 13px;
+  }
+
+  .toolbar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .toolbar h2 {
+    font-size: 20px;
+  }
+
+  .toolbar-actions {
+    grid-column: auto;
+  }
+
+  .question-summary-rail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .question-type-badge {
+    padding: 3px 7px;
+    font-size: 11px;
+  }
+
+  .question-row-actions {
+    gap: 4px;
+  }
+
+  .bank-edit-page,
+  .entry-edit-workbench {
+    padding: 14px 0 22px;
+  }
+
+  .bank-edit-shell,
+  .entry-edit-shell {
+    width: min(100% - 24px, 1500px);
+  }
+
+  .bank-edit-header {
+    gap: 10px;
+  }
+
+  .bank-edit-header h2 {
+    font-size: 23px;
+  }
+
+  .bank-edit-main-card {
+    gap: 12px;
+    border-radius: 10px;
+    padding: 16px 18px 18px;
+  }
+
+  .bank-edit-meta-row,
+  .entry-edit-meta-row {
+    grid-template-columns: 82px minmax(0, 1fr) auto;
+    gap: 10px;
+  }
+
+  .entry-type-control {
+    grid-column: 2 / -1;
+    justify-self: start;
+  }
+
+  .entry-type-control .segmented-control {
+    flex-wrap: wrap;
+  }
+
+  .bank-edit-line,
+  .bank-edit-options-section {
+    grid-template-columns: 82px minmax(0, 1fr) 38px;
+    gap: 10px;
+  }
+
+  .bank-edit-options-section {
+    grid-template-columns: 82px minmax(0, 1fr);
+  }
+
+  .bank-edit-row-label {
+    min-height: 38px;
+    font-size: 14px;
+  }
+
+  .bank-edit-chapter-select select {
+    min-height: 42px;
+    padding: 0 16px;
+    font-size: 14px;
+  }
+
+  .bank-edit-primary-field textarea,
+  .bank-edit-secondary-field textarea,
+  .bank-edit-line textarea,
+  .option-text-control textarea {
+    min-height: 38px;
+    padding: 7px 10px;
+    font-size: 14px;
+  }
+
+  .bank-edit-secondary-field .option-image-row,
+  .option-editor {
+    grid-template-columns: 18px 36px minmax(0, 1fr) 34px 34px 34px;
+    gap: 6px;
+    min-height: 48px;
+    padding: 5px 7px;
+  }
+
+  .bank-edit-secondary-field .option-letter,
+  .option-editor .option-letter {
+    width: 34px;
+    height: 34px;
+    font-size: 16px;
+  }
+
+  .option-correct-check input,
+  .option-correct-control input {
+    width: 20px;
+    height: 20px;
+  }
+
+  .bank-edit-line .image-choose,
+  .bank-edit-secondary-field .image-choose,
+  .option-editor .image-choose,
+  .option-row-icon-button,
+  .bank-edit-add-option {
+    width: 34px;
+    height: 34px;
+    min-height: 34px;
+  }
+}
+
+/* Final alignment guard: older responsive rules must not wrap option controls into extra rows. */
+.bank-edit-secondary-field .option-image-row,
+.option-editor {
+  display: grid;
+  grid-template-columns: 24px 48px minmax(0, 1fr) 42px 42px 42px;
+  align-items: center;
+}
+
+.bank-edit-secondary-field .option-image-row > *,
+.option-editor > * {
+  grid-row: 1;
+}
+
+.bank-edit-secondary-field .option-image-row .option-row-grip,
+.option-editor .option-row-grip {
+  grid-column: 1;
+  justify-self: center;
+}
+
+.bank-edit-secondary-field .option-image-row .option-letter,
+.option-editor .option-letter {
+  grid-column: 2;
+  justify-self: center;
+}
+
+.bank-edit-secondary-field .option-image-row .option-image-label,
+.option-editor .option-text-control {
+  grid-column: 3;
+  min-width: 0;
+}
+
+.bank-edit-secondary-field .option-image-row .option-correct-check,
+.option-editor .option-correct-control {
+  grid-column: 4;
+  justify-self: center;
+}
+
+.bank-edit-secondary-field .option-image-row .image-attachment,
+.option-editor .image-attachment {
+  grid-column: 5;
+  justify-self: center;
+  align-self: center;
+}
+
+.bank-edit-secondary-field .option-image-row .option-row-delete,
+.option-editor .option-row-delete {
+  grid-column: 6;
+  justify-self: center;
+}
+
+.bank-edit-secondary-field .option-image-row .option-correct-check,
+.bank-edit-secondary-field .option-image-row .image-attachment,
+.bank-edit-secondary-field .option-image-row .option-row-icon-button,
+.option-editor .option-correct-control,
+.option-editor .image-attachment,
+.option-editor .option-row-icon-button {
+  grid-row: 1;
+  margin: 0;
+}
+
+.bank-edit-secondary-field .option-image-row .image-preview,
+.option-editor .image-preview {
+  grid-column: 5 / 7;
+  grid-row: 2;
+  justify-self: end;
+}
+
+.bank-edit-secondary-field .option-image-row:has(.image-preview),
+.option-editor:has(.image-preview) {
+  align-items: start;
+}
+
+.bank-edit-secondary-field .option-image-row:has(.image-preview) .option-correct-check,
+.bank-edit-secondary-field .option-image-row:has(.image-preview) > .image-attachment,
+.bank-edit-secondary-field .option-image-row:has(.image-preview) .option-row-delete,
+.option-editor:has(.image-preview) .option-correct-control,
+.option-editor:has(.image-preview) > .image-attachment,
+.option-editor:has(.image-preview) .option-row-delete {
+  align-self: start;
+}
+
+@media (max-width: 1180px) {
+  .bank-edit-secondary-field .option-image-row,
+  .option-editor {
+    grid-template-columns: 22px 42px minmax(0, 1fr) 38px 38px 38px;
+  }
+}
+
+@media (max-width: 980px) {
+  .bank-edit-secondary-field .option-image-row,
+  .option-editor {
+    grid-template-columns: 18px 36px minmax(0, 1fr) 34px 34px 34px;
+  }
+}

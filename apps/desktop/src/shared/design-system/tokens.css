@@ -1,0 +1,76 @@
+:root {
+  font-family: var(--font-ui);
+  color: var(--color-text);
+  background: var(--color-bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  --font-ui: "Microsoft YaHei UI", "Microsoft YaHei", "Segoe UI", system-ui, sans-serif;
+  --font-serif-export: "Times New Roman", "SimSun", serif;
+  --color-bg: #f6f8fb;
+  --color-surface: rgba(255, 255, 255, 0.86);
+  --color-surface-strong: #ffffff;
+  --color-border: rgba(148, 163, 184, 0.24);
+  --color-text: #1f2937;
+  --color-text-muted: #64748b;
+  --color-primary: #3f8f8a;
+  --color-primary-soft: #e5f3f1;
+  --color-danger: #d75b63;
+  --color-warning: #b9852d;
+  --color-success: #3f9363;
+  --subject-pharmaceutics: #3f8f8a;
+  --subject-pharmacology: #7467b7;
+  --subject-chemistry: #c7784f;
+  --subject-analysis: #3d8caf;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 22px;
+  --radius-pill: 999px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --control-height-sm: 32px;
+  --control-height-md: 38px;
+  --row-height: 52px;
+  --shadow-soft: 0 18px 50px rgba(21, 36, 32, 0.12);
+  --shadow-card: 0 12px 28px rgba(21, 36, 32, 0.1);
+  --shadow-raised: 0 8px 20px rgba(15, 23, 42, 0.08);
+  --shadow-floating: 0 18px 48px rgba(15, 23, 42, 0.16);
+  --glass-panel: blur(18px) saturate(1.18);
+  --motion-fast: 120ms;
+  --motion-base: 180ms;
+  --motion-slow: 240ms;
+  --motion-ease: cubic-bezier(.2,.8,.2,1);
+  --line: rgba(27, 43, 39, 0.12);
+  --panel: rgba(255, 255, 255, 0.86);
+  --muted: #65736f;
+  --text: var(--color-text);
+}
+
+.theme-pharmaceutics {
+  --accent: #2b8c78;
+  --accent-deep: #176b5a;
+  --accent-soft: #d9eee8;
+}
+
+.theme-pharmacology {
+  --accent: #5366c7;
+  --accent-deep: #38489a;
+  --accent-soft: #e2e6fb;
+}
+
+.theme-medicinalChemistry {
+  --accent: #264f7a;
+  --accent-deep: #17375a;
+  --accent-soft: #e2edf7;
+}
+
+.theme-pharmaceuticalAnalysis {
+  --accent: #2f536c;
+  --accent-deep: #20394b;
+  --accent-soft: #e3edf2;
+}
