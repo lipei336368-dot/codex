@@ -1,6 +1,6 @@
 [package]
 name = "yiyan_daily_question_generator"
-version = "0.1.0"
+version = "0.1.1"
 description = "毅研每日一题生成器"
 authors = ["Yiyan"]
 edition = "2021"

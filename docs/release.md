@@ -36,17 +36,17 @@ apps/desktop/src-tauri/target/release/yiyan_daily_question_generator.exe
 建议发布 tag：
 
 ```text
-v0.1.0
+v0.1.1
 ```
 
 Release 标题：
 
 ```text
-毅研每日一题生成器 v0.1.0
+毅研每日一题生成器 v0.1.1
 ```
 
 上传文件：
 
 ```text
-yiyan-daily-question-generator-v0.1.0-windows-portable.zip
+yiyan-daily-question-generator-v0.1.1-windows-portable.zip
 ```
