@@ -6,6 +6,7 @@ import { defaultPathInDirectory } from "../../shared/platform/paths";
 import { exportSheetToPngBytes } from "../export-image/exportImage";
 import { ImagePreloadError } from "../export-image/imagePreload";
 import type { BatchSheetElements } from "./PreviewSheets";
+import { buildExportBatchReport, type ExportBatchItemResult } from "./exportBatchReport";
 import { answerOutputPath, dateCodeFromIsoDate, folderFromPath, joinPath } from "./previewExportPaths";
 
 type UseImageExportInput = {
@@ -169,18 +170,31 @@ export function useImageExport({
     setExportResult(null);
     try {
       const outputFolder = folderFromPath(outputPath);
+      const results: ExportBatchItemResult[] = [];
       for (const batch of batches) {
-        const refs = batchSheetRefs.current[batch.id];
-        if (!refs?.question || !refs.answer) {
-          throw new Error(`missing export sheets for ${batch.id}`);
-        }
+        try {
+          const refs = batchSheetRefs.current[batch.id];
+          if (!refs?.question || !refs.answer) {
+            throw new Error(`missing export sheets for ${batch.id}`);
+          }
 
-        const questionPath = joinPath(outputFolder, `${dateCodeFromIsoDate(batch.publishDate)}-每日一题.png`);
-        const answerPath = answerOutputPath(questionPath);
-        const questionBytes = (await exportSheetToPngBytes(refs.question)).bytes;
-        const answerBytes = (await exportSheetToPngBytes(refs.answer)).bytes;
-        await apiClient.writeBinaryFile(questionPath, questionBytes);
-        await apiClient.writeBinaryFile(answerPath, answerBytes);
+          const questionPath = joinPath(outputFolder, `${dateCodeFromIsoDate(batch.publishDate)}-每日一题.png`);
+          const answerPath = answerOutputPath(questionPath);
+          const questionBytes = (await exportSheetToPngBytes(refs.question)).bytes;
+          const answerBytes = (await exportSheetToPngBytes(refs.answer)).bytes;
+          await apiClient.writeBinaryFile(questionPath, questionBytes);
+          await apiClient.writeBinaryFile(answerPath, answerBytes);
+          results.push({ publishDate: batch.publishDate, ok: true });
+        } catch (error) {
+          console.error(error);
+          results.push({ publishDate: batch.publishDate, ok: false });
+        }
+      }
+
+      const report = buildExportBatchReport(results);
+      if (!report.ok) {
+        setExportResult({ kind: "error", message: report.message });
+        return;
       }
 
       if (overwriteDates.length > 0) {
@@ -190,7 +204,7 @@ export function useImageExport({
         await apiClient.markDrawn(subjectId, batch.questions.map((question) => question.id), batch.publishDate);
       }
       await onAfterExport();
-      setExportResult({ kind: "success", message: "已导出全部", path: outputPath });
+      setExportResult({ kind: "success", message: report.message, path: outputPath });
     } catch (error) {
       console.error(error);
       setExportResult({ kind: "error", message: "导出失败" });

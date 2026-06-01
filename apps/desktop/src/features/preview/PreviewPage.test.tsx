@@ -288,6 +288,35 @@ describe("PreviewPage", () => {
     expect(await screen.findByRole("status")).toHaveTextContent("已导出全部");
   });
 
+  it("does not mark any batch drawn when exporting all days partially fails", async () => {
+    vi.mocked(apiClient.writeBinaryFile)
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce(undefined)
+      .mockRejectedValueOnce(new Error("disk full"));
+    useAppStore.getState().openPreviewQueue([
+      {
+        id: "day-1",
+        title: "第 1 天",
+        publishDate: "2026-05-06",
+        questions: [choiceQuestion]
+      },
+      {
+        id: "day-2",
+        title: "第 2 天",
+        publishDate: "2026-05-07",
+        questions: [shortAnswerQuestion]
+      }
+    ]);
+
+    renderPreviewPage();
+
+    fireEvent.click(screen.getByRole("button", { name: "导出全部" }));
+
+    expect(await screen.findByText(/成功的日期未标记为已抽取/)).toBeInTheDocument();
+    expect(apiClient.markDrawn).not.toHaveBeenCalled();
+    expect(apiClient.resetGeneratedDates).not.toHaveBeenCalled();
+  });
+
   it("opens a large image preview when clicking an export sheet and closes on blank area", async () => {
     renderPreviewPage();
 
