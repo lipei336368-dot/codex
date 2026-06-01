@@ -11,7 +11,6 @@ import type {
   ImportReportDto,
   QuestionDto,
   QuestionOptionInput,
-  TaskProgressDto,
   QuestionTypeDto,
   UpdateQuestionInput
 } from "../../shared/api/contracts";
@@ -20,8 +19,6 @@ import { ConfirmDialog } from "../../shared/components/ConfirmDialog";
 import { FilterRail } from "../../shared/components/FilterRail";
 import { ImageLightbox } from "../../shared/components/ImageLightbox";
 import { ReportDrawer } from "../../shared/components/ReportDrawer";
-import { chooseSavePath, saveTextFile } from "../../shared/platform/files";
-import { defaultPathInDirectory } from "../../shared/platform/paths";
 import { TaskProgressDialog } from "../tasks/TaskProgressDialog";
 import { BankEditPanel } from "./components/BankEditPanel";
 import { BankQuestionListPane } from "./components/BankQuestionListPane";
@@ -32,6 +29,7 @@ import {
   getSelectedAvailableQuestions,
   reconcileSelectedIds
 } from "./bankSelection";
+import { useBankImportExport } from "./useBankImportExport";
 
 type BankPageProps = {
   subjectId: SubjectId;
@@ -69,11 +67,6 @@ export function BankPage({ subjectId }: BankPageProps) {
   const [editingOptionImagePreviews, setEditingOptionImagePreviews] = useState<Record<string, string | null>>({});
   const [editingError, setEditingError] = useState("");
   const [lightboxImage, setLightboxImage] = useState<{ src: string; alt: string } | null>(null);
-  const [importMessage, setImportMessage] = useState("");
-  const [exportMessage, setExportMessage] = useState("");
-  const [importReport, setImportReport] = useState<ImportReportDto | null>(null);
-  const [duplicateGroups, setDuplicateGroups] = useState<DuplicateQuestionGroupDto[] | null>(null);
-  const [activeTask, setActiveTask] = useState<TaskProgressDto | null>(null);
   const [pendingResetIds, setPendingResetIds] = useState<string[] | null>(null);
   const importInputRef = useRef<HTMLInputElement | null>(null);
   const normalizedQuery = query.trim() || null;
@@ -179,45 +172,17 @@ export function BankPage({ subjectId }: BankPageProps) {
     }
   });
 
-
-  const duplicateMutation = useMutation({
-    mutationFn: () => apiClient.findDuplicateQuestions(subjectId),
-    onSuccess: (groups) => {
-      setDuplicateGroups(groups);
-      setExportMessage(groups.length > 0 ? "" : "未发现重复题目");
-    }
-  });
-
-  const exportSelectedMutation = useMutation({
-    mutationFn: (questionIds: string[]) => apiClient.exportSelectedQuestionsJson(subjectId, questionIds),
-    onSuccess: async (jsonText) => {
-      const path = await saveTextFile(
-        {
-          title: "导出题库 JSON",
-          defaultPath: defaultPathInDirectory(defaultExportDirectory, "题库导出.json"),
-          filters: [{ name: "JSON", extensions: ["json"] }]
-        },
-        jsonText
-      );
-      setExportMessage(path ? "已导出 JSON" : "已取消导出");
-    }
-  });
-
-  const exportSelectedWordMutation = useMutation({
-    mutationFn: async (questionIds: string[]) => {
-      const path = await chooseSavePath({
-        title: "导出题库 Word",
-        defaultPath: defaultPathInDirectory(defaultExportDirectory, "题库导出.docx"),
-        filters: [{ name: "Word", extensions: ["docx"] }]
+  const bankImportExport = useBankImportExport({
+    subjectId,
+    defaultExportDirectory,
+    refreshBankData,
+    onDeleteDuplicateQuestions: (questionIds, afterSuccess) => {
+      deleteQuestionMutation.mutate(questionIds, {
+        onSuccess: async () => {
+          afterSuccess();
+          await refreshBankData();
+        }
       });
-      if (!path) {
-        return false;
-      }
-      await apiClient.exportSelectedQuestionsWord(subjectId, questionIds, path);
-      return true;
-    },
-    onSuccess: (saved) => {
-      setExportMessage(saved ? "已导出 Word" : "已取消导出");
     }
   });
 
@@ -331,15 +296,11 @@ export function BankPage({ subjectId }: BankPageProps) {
   }
 
   function exportSelectedQuestions() {
-    if (selectedIds.size > 0) {
-      exportSelectedMutation.mutate([...selectedIds]);
-    }
+    bankImportExport.exportSelectedQuestions([...selectedIds]);
   }
 
   function exportSelectedQuestionsWord() {
-    if (selectedIds.size > 0) {
-      exportSelectedWordMutation.mutate([...selectedIds]);
-    }
+    bankImportExport.exportSelectedQuestionsWord([...selectedIds]);
   }
 
   function resetDrawnQuestion(questionId: string) {
@@ -354,72 +315,14 @@ export function BankPage({ subjectId }: BankPageProps) {
     setPendingResetIds(null);
   }
 
-  async function importJsonFile(fileList: FileList | null) {
-    const files = Array.from(fileList ?? []);
-    if (files.length === 0) {
-      return;
-    }
-
-    const startedAt = new Date().toISOString();
-    setActiveTask({
-      id: `import-${Date.now()}`,
-      kind: "import_json",
-      status: "running",
-      title: "导入 JSON",
-      current: 0,
-      total: files.length,
-      message: "正在读取文件",
-      createdAt: startedAt,
-      updatedAt: startedAt
-    });
-
-    const reports: ImportReportDto[] = [];
-    try {
-      for (const [index, file] of files.entries()) {
-        setActiveTask((task) =>
-          task
-            ? {
-                ...task,
-                current: index,
-                message: `正在导入 ${file.name}`,
-                updatedAt: new Date().toISOString()
-              }
-            : task
-        );
-        const jsonText = await readFileText(file);
-        reports.push(await apiClient.importJsonText(subjectId, jsonText));
-      }
-
-      const report = mergeImportReports(reports);
-      setImportMessage(`已导入 ${report.added}，跳过 ${report.skipped}`);
-      setImportReport(report.skipped > 0 || report.errorsCount > 0 ? report : null);
-      await refreshBankData();
-    } finally {
-      setActiveTask(null);
-    }
-  }
-
   function formatImportError(error: ImportReportDto["errors"][number]) {
     const stem = error.stem ? `${error.stem} - ` : "";
     return `第 ${error.index} 条：${stem}${error.message}`;
   }
 
-  function keepDuplicateQuestion(group: DuplicateQuestionGroupDto, keepId: string) {
-    const deleteIds = group.questions.map((question) => question.id).filter((id) => id !== keepId);
-    if (deleteIds.length === 0) {
-      return;
-    }
-    deleteQuestionMutation.mutate(deleteIds, {
-      onSuccess: async () => {
-        setDuplicateGroups((current) => (current ? current.filter((item) => item.key !== group.key) : current));
-        await refreshBankData();
-      }
-    });
-  }
-
   const bankPrimaryActions = [
     { label: "导入 JSON", onClick: () => importInputRef.current?.click(), variant: "secondary" as const },
-    { label: "查重", onClick: () => duplicateMutation.mutate(), variant: "secondary" as const },
+    { label: "查重", onClick: bankImportExport.findDuplicates, variant: "secondary" as const },
     { label: "全选可用", onClick: selectAllAvailable, variant: "ghost" as const, disabled: availableQuestionIds.length === 0 }
   ];
 
@@ -493,7 +396,7 @@ export function BankPage({ subjectId }: BankPageProps) {
             hidden
             multiple
             onChange={(event) => {
-              void importJsonFile(event.target.files);
+              void bankImportExport.importJsonFile(event.target.files);
               event.target.value = "";
             }}
             ref={importInputRef}
@@ -503,8 +406,8 @@ export function BankPage({ subjectId }: BankPageProps) {
             summary={summary}
             selectedType={questionType}
             onSelectType={setQuestionType}
-            importMessage={importMessage}
-            exportMessage={exportMessage}
+            importMessage={bankImportExport.importMessage}
+            exportMessage={bankImportExport.exportMessage}
             selectedIds={selectedIds}
             batchActions={batchActions}
             questions={visibleQuestions}
@@ -542,23 +445,27 @@ export function BankPage({ subjectId }: BankPageProps) {
           />
         </section>
 
-        {duplicateGroups ? (
+        {bankImportExport.duplicateGroups ? (
           <section className="bank-duplicate-panel glass-panel" aria-label="重复题目处理">
-            <DuplicatePanel groups={duplicateGroups} onClose={() => setDuplicateGroups(null)} onKeep={keepDuplicateQuestion} />
+            <DuplicatePanel
+              groups={bankImportExport.duplicateGroups}
+              onClose={() => bankImportExport.setDuplicateGroups(null)}
+              onKeep={bankImportExport.keepDuplicateQuestion}
+            />
           </section>
         ) : null}
       </div>
 
-      {importReport ? (
+      {bankImportExport.importReport ? (
         <ReportDrawer
           title="导入报告"
           summary={[
-            { label: "已导入", value: importReport.added },
-            { label: "跳过", value: importReport.skipped },
-            { label: "错误", value: importReport.errorsCount }
+            { label: "已导入", value: bankImportExport.importReport.added },
+            { label: "跳过", value: bankImportExport.importReport.skipped },
+            { label: "错误", value: bankImportExport.importReport.errorsCount }
           ]}
-          details={importReport.errors.map(formatImportError)}
-          onClose={() => setImportReport(null)}
+          details={bankImportExport.importReport.errors.map(formatImportError)}
+          onClose={() => bankImportExport.setImportReport(null)}
         />
       ) : null}
       {lightboxImage ? (
@@ -574,33 +481,12 @@ export function BankPage({ subjectId }: BankPageProps) {
           onConfirm={confirmPendingReset}
         />
       ) : null}
-      <TaskProgressDialog open={Boolean(activeTask)} task={activeTask} onClose={() => setActiveTask(null)} />
+      <TaskProgressDialog
+        open={Boolean(bankImportExport.activeTask)}
+        task={bankImportExport.activeTask}
+        onClose={() => bankImportExport.setActiveTask(null)}
+      />
     </section>
-  );
-}
-
-function readFileText(file: File): Promise<string> {
-  if (typeof file.text === "function") {
-    return file.text();
-  }
-
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result ?? ""));
-    reader.onerror = () => reject(reader.error ?? new Error("failed to read file"));
-    reader.readAsText(file);
-  });
-}
-
-function mergeImportReports(reports: ImportReportDto[]): ImportReportDto {
-  return reports.reduce<ImportReportDto>(
-    (merged, report) => ({
-      added: merged.added + report.added,
-      skipped: merged.skipped + report.skipped,
-      errorsCount: merged.errorsCount + report.errorsCount,
-      errors: [...merged.errors, ...report.errors]
-    }),
-    { added: 0, skipped: 0, errorsCount: 0, errors: [] }
   );
 }
 
